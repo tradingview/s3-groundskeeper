@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+		"allowJs": true,
+		"composite": false,
+		"lib": [
+			"dom",
+			"es2015.collection",
+			"es2015.core",
+			"es2015.iterable",
+			"es2015.promise",
+			"es2015.symbol.wellknown",
+			"es2016.array.include",
+			"es2017.object",
+			"es5"
+		],
+		"module": "ES6",
+		"moduleResolution": "Node",
+		"noImplicitAny": true,
+		"sourceMap": true,
+		"outDir": "dist",
+		"strict": true,
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"resolveJsonModule": true,
+		"target": "ES6",
+		"jsx": "react"
+	},
+	"include": [
+		"src/**/*"
+	]
+}

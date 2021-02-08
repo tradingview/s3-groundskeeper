@@ -1,0 +1,29 @@
+{
+	
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Start",
+			"runtimeArgs": [
+			],
+			"args" : [
+				"${workspaceFolder}/dist",
+				"--src=",
+				"--s3-bucket=",
+				"--s3-region=",
+				"--s3-key=",
+				"--s3-seckey=",
+				"--artifactory-host=",
+				"--artifactory-user=",
+				"--artifactory-apikey=",
+				"--dry-run",
+				"--show-conf"
+			],
+			"env": {
+			},
+			"cwd": "${workspaceFolder}/dist"
+		}
+	]
+}
