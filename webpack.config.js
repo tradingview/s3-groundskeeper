@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const { mode, appVersion } = require("webpack-nano/argv");
 const fs = require('fs');
 const path = require('path');
@@ -51,6 +52,7 @@ const getConfig = (mode) => {
 		},
 
 		plugins: [
+			new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true })
 			// new GenerateJsonPlugin('package.json', packageMetadata(appVersion), null, 2)
 		]
 	}

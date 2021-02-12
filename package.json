@@ -7,9 +7,8 @@
     "type": "git",
     "url": "https://github.com/tradingview/s3-groundskeeper"
   },
-  "main": "dist/index.js",
   "bin": {
-    "s3gk": "./bin/s3gk"
+    "s3gk": "dist/index.js"
   },
   "scripts": {
     "build:dev": "wp --config webpack.config.js --mode development",
