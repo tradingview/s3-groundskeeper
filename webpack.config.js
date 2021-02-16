@@ -3,6 +3,7 @@ const { mode, appVersion } = require("webpack-nano/argv");
 const fs = require('fs');
 const path = require('path');
 const { merge } = require('webpack-merge');
+const CopyPlugin = require('copy-webpack-plugin');
 const GenerateJsonPlugin = require('generate-json-webpack-plugin');
 
 const production = {
@@ -73,7 +74,13 @@ const getConfig = (mode, appVersion) => {
 
 		plugins: [
 			new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true }),
-			new GenerateJsonPlugin('package.json', packageMetadata(appVersion), null, 2)
+			new GenerateJsonPlugin('package.json', packageMetadata(appVersion), null, 2),
+			new CopyPlugin({
+				patterns: [
+					{ from: 'LICENSE.txt', to: 'LICENSE', toType: 'file' },
+					{ from: 'README.md', to: 'README.md', toType: 'file' },
+				]
+			}),
 		]
 	}
 
