@@ -1,49 +1,34 @@
 {
-  "name": "s3-groundskeeper",
-  "version": "0.0.1",
-  "author": "TradingView, Inc.",
-  "description": "One way sync. local directory -> s3 bucket's content",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tradingview/s3-groundskeeper"
-  },
-  "main": "dist/index.js",
-  "bin": {
-    "s3gk": "./bin/s3gk"
-  },
   "scripts": {
     "build:dev": "wp --config webpack.config.js --mode development",
     "build:prod": "wp --config webpack.config.js --mode production",
-    "lint": "eslint --ext .ts,.tsx src/",
-    "prepack": "npm run build:prod"
+    "lint": "eslint --ext .ts,.tsx src/"
   },
   "private": true,
   "workspaces": [],
-  "keywords": [],
-  "license": "MIT",
-  "config": {},
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
     "@aws-sdk/types": "^3.0.0",
+    "@types/minimatch": "3.0.3",
     "@types/node": "^12.0.12",
     "@types/yargs": "11.0.0",
-    "@types/minimatch": "3.0.3",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
+    "aws-sdk": "2.796.0",
+    "copy-webpack-plugin": "^7.0.0",
     "eslint": "^7.14.0",
     "eslint-plugin-import": "^2.22.1",
     "file-loader": "^6.2.0",
+    "generate-json-webpack-plugin": "^2.0.0",
+    "minimatch": "3.0.4",
     "ts-loader": "^8.0.7",
     "ts-node-dev": "^1.0.0-pre.63",
     "typescript": "^4.0.5",
     "webpack": "^5.3.2",
     "webpack-cli": "^4.1.0",
     "webpack-merge": "^5.3.0",
-    "webpack-nano": "^1.1.0"
+    "webpack-nano": "^1.1.0",
+    "yargs": "^16.2.0"
   },
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.0.0",
-    "aws-sdk": "2.796.0",
-    "yargs": "^16.2.0",
-    "minimatch": "3.0.4"
-  }
+  "dependencies": {}
 }
