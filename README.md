@@ -63,3 +63,9 @@ or
 > **#metapointer** *jfrogart*
 > **oid** *name:myfilename.txt*
 
+## Publish a new release
+1. Make an annotated git tag using `git tag -a <version>` or `git tag -s <version>`, if signed tag is preferred.
+2. Checkout the tag, cleanup the working tree.
+3. Build the package: `npm run build:prod -- --appVersion <version>`.
+4. Test the publish: `npm publish dist --dry-run`, check the package contents.
+5. Perform the actual publishing: `npm publish dist`.

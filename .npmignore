@@ -1,8 +1,0 @@
-.vscode/*
-src/*
-dist/*.map
-.eslintrc.json
-tsconfig.json
-webpack.config.js
-*.lock
-*.tgz
