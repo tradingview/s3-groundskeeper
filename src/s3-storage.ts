@@ -131,13 +131,11 @@ export class S3Storage implements Storage {
 		const run = async (): Promise<void> => {
 			const bucket = this.bucket;
 			const meta = await metaPromise;
-			const acl: S3.ObjectCannedACL = 'public-read';
 
 			const params: S3.PutObjectCommandInput = {
 				Key: obj.key,
 				Bucket: bucket,
-				Metadata: meta.custom,
-				ACL: acl
+				Metadata: meta.custom
 			};
 
 			if (meta.contentType) {
