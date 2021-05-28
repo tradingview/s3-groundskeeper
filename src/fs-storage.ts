@@ -6,70 +6,8 @@ import { ReadonlyStorage, StorageObject, ObjectMeta } from './storage-api';
 import * as jfrog from './jfrog';
 import { findMetaForPath } from './config';
 
-interface MetaPointer {
-	readonly source: string;
-	oid: {kind: string; value: string};
-}
+import { MetaPointer, readMetaPointerFromFile } from './api';
 
-async function readMetaPointer(filePath: string, stats: fs.Stats): Promise<MetaPointer | undefined> {
-	const tag = '#metapointer';
-
-	if (stats.size <= tag.length) {
-		return ;
-	}
-
-	const handle = await fs.promises.open(filePath, 'r')
-
-	try {
-		const readString = (len: number): Promise<string> => {
-			return handle.read(Buffer.alloc(len), 0, len, 0).then(result => {
-				return result.buffer.toString('utf8', 0, result.bytesRead);
-			});
-		};
-
-		const tagLine = await readString(tag.length);
-		if (tagLine !== tag) {
-			return;
-		}
-
-		const content = await readString(stats.size);
-		const lines = content
-			.split('\n')
-			.map(l => l.trim())
-			.filter(l => l.length > 0)
-			;
-
-		const source = (() => {
-			const line0 = lines.shift();
-			if (!line0) {
-				return;
-			}
-			const match = /#metapointer ([a-z0-9_]+)$/.exec(line0);
-			return (match && match.length > 1) ? match[1] : undefined;
-		})();
-
-		if (!source) {
-			throw new Error(`Invalid #metapointer, source must be specified: ${filePath}`);
-		}
-
-		const oidRe = /^oid ([A-Za-z0-9_]+):([A-Za-z0-9\._-]+)$/;
-
-		for (const line of lines) {
-			const match = oidRe.exec(line);
-			// tslint:disable-next-line: no-magic-numbers
-			if (match && match.length === 3) {
-				return {
-					source,
-					// tslint:disable-next-line: no-magic-numbers
-					oid: {kind: match[1], value: match[2]}
-				};
-			}
-		}
-	}
-	finally {
-		await handle.close();
-	}
-}
 
 function computeFileMd5(fullPath: string): Promise<string> {
 	return fs.promises
@@ -185,7 +123,7 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 				}
 				
 				const item = response.results[0];
-				this.uri = item ? jfrog.artifactory().resolveContentUri(item) : `item not found: ${metaptr.oid.value}`;
+				this.uri = item ? jfrog.artifactory().resolveUri(item) : `item not found: ${metaptr.oid.value}`;
 				return item;
 			});
 
@@ -258,7 +196,7 @@ export class FsStorage implements ReadonlyStorage {
 					subworks.push(iterateDirectory(fullPath));
 				}
 				else if (stats.isSymbolicLink() || stats.isFile()) {
-					const metaptr = stats.isSymbolicLink() ? undefined : await readMetaPointer(fullPath, stats);
+					const metaptr = stats.isSymbolicLink() ? undefined : await readMetaPointerFromFile(fullPath, stats);
 					const obj = metaptr ? new MetaPointerFsObject(this.rootPath, key, metaptr) : new FsObject(this.rootPath, key, stats);
 					objects.push(obj);
 				}
