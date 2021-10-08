@@ -32,6 +32,7 @@ export function setupArgv(): void {
 		.option('meta', {demand: false, default: '', description: 'Content meta information.' } )
 		.option('dry-run', { alias: 'n', demand: false, default: false, ['boolean']: true, description: 'Dry run: do nothing only prints what to do.'})
 		.option('show-conf', { demand: false, default: false, ['boolean']: true, description: 'Print json object for the used configuration'})
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		.version(require('package.json').version)
 		.argv;
 
