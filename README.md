@@ -7,11 +7,11 @@ One way synchronization local directory content with Amazon S3 bucket.
 ## Setup, develop, build
 ### npm
 setup: `npm i`
-start develop: `npm run build:dev` or build prod: `npm run build:prod`
+start develop: `npm run build`
 
 ### yarn
 setup `yarn`
-start develop: `yarn build:dev` or build prod `yarn build:prod`
+start develop: `yarn build`
 
 
 ## CLI
