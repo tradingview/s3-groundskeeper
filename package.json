@@ -6,7 +6,6 @@
   "private": true,
   "workspaces": [],
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.0.0",
     "@aws-sdk/types": "^3.0.0",
     "@types/minimatch": "3.0.3",
     "@types/node": "^12.0.12",
@@ -17,6 +16,7 @@
     "typescript": "^4.0.5"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
     "file-loader": "^6.2.0",
     "minimatch": "3.0.4",
     "yargs": "^16.2.0"

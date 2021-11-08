@@ -40,7 +40,7 @@ function copyLicense() {
 }
 
 function generatePackage() {
-	const packageMetadata = (version) => ({
+	const packageMetadata = (version, dependencies) => ({
 		name: 's3-groundskeeper',
 		version: version,
 		author: 'TradingView, Inc.',
@@ -55,11 +55,10 @@ function generatePackage() {
 			s3gk: 'index.js'
 		},
 		type: 'module',
-		dependencies: {}
+		dependencies: dependencies
 	});
 
-	let packageJson = packageMetadata(getArgs().version);
-	packageJson.dependencies = JSON.parse(fs.readFileSync(path.join(getArgs().root, 'package.json'))).dependencies;
-
+	const packageJson = packageMetadata(getArgs().version, JSON.parse(fs.readFileSync(path.join(getArgs().root, 'package.json'))).dependencies);
+	
 	fs.writeFileSync(path.join(getArgs().output, 'package.json'), JSON.stringify(packageJson, null, '\t'));
 }
