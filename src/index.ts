@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { exit } from 'process';
 import { S3Storage } from './s3-storage.js';
 import { FsStorage } from './fs-storage.js';
