@@ -1,4 +1,4 @@
-import { ObjectMeta, ReadonlyStorage, Storage, StorageOp } from './storage-api';
+import { ObjectMeta, ReadonlyStorage, Storage, StorageOp } from './storage-api.js';
 
 // different object equality strategies require different equality predicates
 type ObjectMetaEqualityPredicate = (a: ObjectMeta, b: ObjectMeta) => boolean;

@@ -24,6 +24,18 @@
 			"env": {
 			},
 			"cwd": "${workspaceFolder}/dist"
-		}
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Tools: pack",
+			"runtimeExecutable": "node",
+			"args": [
+				"${workspaceRoot}/package.js"
+			],
+			"console": "integratedTerminal",
+			"env": {},
+			"cwd": "${workspaceRoot}/"
+		},
 	]
 }

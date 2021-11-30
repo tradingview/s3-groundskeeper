@@ -1,6 +1,6 @@
 import * as stream from 'stream';
-import { getArgv } from './config';
-import * as http from './http';
+import { getArgv } from './config.js';
+import * as http from './http.js';
 
 interface ArtConfig {
 	host: string;

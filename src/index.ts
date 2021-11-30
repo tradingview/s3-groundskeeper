@@ -1,9 +1,11 @@
+#!/usr/bin/env node
+
 import { exit } from 'process';
-import { S3Storage } from './s3-storage';
-import { FsStorage } from './fs-storage';
-import { setupArgv, getArgv } from './config';
-import { syncStorage } from './storage-sync';
-import * as diag from './diag';
+import { S3Storage } from './s3-storage.js';
+import { FsStorage } from './fs-storage.js';
+import { setupArgv, getArgv } from './config.js';
+import { syncStorage } from './storage-sync.js';
+import * as diag from './diag.js';
 
 async function main(): Promise<number | undefined> {
 
