@@ -1,6 +1,6 @@
 import * as stream from 'stream';
 import * as S3 from '@aws-sdk/client-s3';
-import { getArgv } from './config';
+import { getArgv } from './config.js';
 import { Storage, StorageOp,  StorageObject, ObjectMeta } from './storage-api';
 
 

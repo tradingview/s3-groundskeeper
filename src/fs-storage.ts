@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as stream from 'stream';
 import * as crypto from 'crypto';
-import { ReadonlyStorage, StorageObject, ObjectMeta } from './storage-api';
-import * as jfrog from './jfrog';
-import { findMetaForPath } from './config';
+import { ReadonlyStorage, StorageObject, ObjectMeta } from './storage-api.js';
+import * as jfrog from './jfrog.js';
+import { findMetaForPath } from './config.js';
 
-import { MetaPointer, readMetaPointerFromFile } from './api';
+import { MetaPointer, readMetaPointerFromFile } from './api/api.js';
 
 
 function computeFileMd5(fullPath: string): Promise<string> {

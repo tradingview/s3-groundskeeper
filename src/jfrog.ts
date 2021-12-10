@@ -1,7 +1,7 @@
 import { getArgv } from './config';
-import { createArtifactoryClient, ArtifactoryConfig, ArtifactoryClient } from './api';
+import { createArtifactoryClient, ArtifactoryConfig, ArtifactoryClient } from './api/api.js';
 
-export { ArtifactoryConfig, ArtifactoryClient, ArtifactoryItemMeta } from './api';
+export { ArtifactoryConfig, ArtifactoryClient, ArtifactoryItemMeta } from './api/api.js';
 
 
 let artifactoryInstance: ArtifactoryClient | undefined;

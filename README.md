@@ -7,11 +7,11 @@ One way synchronization local directory content with Amazon S3 bucket.
 ## Setup, develop, build
 ### npm
 setup: `npm i`
-start develop: `npm run build:dev` or build prod: `npm run build:prod`
+start develop: `npm run build`
 
 ### yarn
 setup `yarn`
-start develop: `yarn build:dev` or build prod `yarn build:prod`
+start develop: `yarn build`
 
 
 ## CLI
@@ -66,6 +66,6 @@ or
 ## Publish a new release
 1. Make an annotated git tag using `git tag -a <version>` or `git tag -s <version>`, if signed tag is preferred.
 2. Checkout the tag, cleanup the working tree.
-3. Build the package: `npm run build:prod -- --appVersion <version>`.
+3. Build the package: `npm run build -- --version <version>`.
 4. Test the publish: `npm publish dist --dry-run`, check the package contents.
 5. Perform the actual publishing: `npm publish dist`.
