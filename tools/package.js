@@ -79,7 +79,7 @@ function copyLicense() {
 	}
 
 	fs.copyFileSync(path.join(getArgs().root, 'LICENSE.txt'), path.join(getArgs().output, 'LICENSE'));
-	fs.copyFileSync(path.join(getArgs().root, 'README.md'), path.join(getArgs().output, 'README.md'));
+	fs.copyFileSync(path.join(getArgs().root, 'README.md'), path.join(getArgs().output, 'README.md'));	
 }
 
 function generatePackage() {
