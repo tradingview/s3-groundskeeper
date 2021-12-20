@@ -3,9 +3,6 @@
     "build": "tsc --build tsconfig.json && node tools/package.js",
     "lint": "eslint --ext .ts,.tsx src/"
   },
-  "exports": {
-    ".": "./api/api.js"
-  },
   "private": true,
   "workspaces": [],
   "devDependencies": {

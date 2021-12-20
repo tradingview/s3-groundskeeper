@@ -6,7 +6,7 @@ import { ReadonlyStorage, StorageObject, ObjectMeta } from './storage-api.js';
 import * as jfrog from './jfrog.js';
 import { findMetaForPath } from './config.js';
 
-import { MetaPointer, readMetaPointerFromFile } from './api/api.js';
+import { MetaPointer, readMetaPointerFromFile } from './index.js';
 
 
 function computeFileMd5(fullPath: string): Promise<string> {

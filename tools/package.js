@@ -22,46 +22,6 @@ function main() {
 
 main();
 
-function getPublishedVersion() {
-	try {
-		// Requesting published package version: npm view s3-groundskeeper version:
-		const processResult = require('child_process').spawnSync('npm', ['view', PACKAGE_NAME, 'version'], { encoding: 'utf-8' });
-
-		if (processResult.status !== 0) {
-			throw new Error('npm view returns an error ');
-		}
-
-		console.log(processResult.stdout.trim());
-		return semver.parse(processResult.stdout.trim());
-	}
-	catch {
-		console.log('Fail to detect published version');
-	}
-
-	return null;
-}
-
-function getPackageVersion(version) {
-	const latestVersion = getPublishedVersion();
-	if (!latestVersion) {
-		return version;
-	}
-
-	const targetVersion = semver.parse(version);
-	if (!targetVersion) {
-		throw new Error(`Fail to parse version (${version})`);
-	}
-
-	if (targetVersion > latestVersion) {
-		console.log(`Package version (${targetVersion}), latest published (${latestVersion.toString()})`);
-		return version;
-	}
-
-	const newVersion = `${latestVersion.major}.${latestVersion.minor}.${latestVersion.patch + 1}`;
-	console.log(`Package version (${latestVersion.toString()}) -> (${newVersion})`);
-	return newVersion;
-}
-
 function getArgs() {
 	const argv = yargs(hideBin(process.argv))
 		.version(false)
@@ -85,7 +45,7 @@ function copyLicense() {
 function generatePackage() {
 	const packageMetadata = (version, dependencies) => ({
 		name: PACKAGE_NAME,
-		version: getPackageVersion(version),
+		version: version,
 		author: 'TradingView, Inc.',
 		description: 'One way sync. local directory -> s3 bucket\'s content',
 		license: 'MIT',
@@ -94,7 +54,7 @@ function generatePackage() {
 			type: 'git',
 			url: 'https://github.com/tradingview/s3-groundskeeper'
 		},
-		main: "api/api.js",
+		main: 'index.js',
 		bin: {
 			s3gk: 'cli.js'
 		},

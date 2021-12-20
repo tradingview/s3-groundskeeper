@@ -1,5 +1,5 @@
 import * as stream from 'stream';
-import * as http from '../utils/http';
+import * as http from './utils/http';
 
 export interface ArtifactoryConfig {
 	protocol?: string;
