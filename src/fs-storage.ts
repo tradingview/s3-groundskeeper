@@ -3,10 +3,9 @@ import * as path from 'path';
 import * as stream from 'stream';
 import * as crypto from 'crypto';
 import { ReadonlyStorage, StorageObject, ObjectMeta } from './storage-api.js';
-import * as jfrog from './jfrog.js';
-import { findMetaForPath } from './config.js';
+import { findMetaForPath, getArgv } from './config.js';
 
-import { MetaPointer, readMetaPointerFromFile } from './index.js';
+import { ArtifactoryClient, ArtifactoryConfig, ArtifactoryItemMeta, createArtifactoryClient, MetaPointer, readMetaPointerFromFile } from './index.js';
 
 
 function computeFileMd5(fullPath: string): Promise<string> {
@@ -98,7 +97,8 @@ class FsObject extends FsObjectBase implements StorageObject {
  */
 class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 	private readonly metaptr: MetaPointer;
-	private readonly artItem: Promise<jfrog.ArtifactoryItemMeta | null>;
+	private readonly artItem: Promise<ArtifactoryItemMeta | null>;
+	private readonly artifactoryClient: ArtifactoryClient;
 	private uri: string | undefined;
 
 	constructor(rootPath: string, relPath: string, metaptr: MetaPointer) {
@@ -112,8 +112,17 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 				.include("*")
 				`;
 
-		this.artItem = jfrog.artifactory()
-			.query<jfrog.ArtifactoryItemMeta>(aql)
+		const argv = getArgv();
+		const artConfig: ArtifactoryConfig = {
+			host: argv['artifactory-host'],
+			user: argv['artifactory-user'],
+			apiKey: argv['artifactory-apikey']
+		};		
+
+		this.artifactoryClient = createArtifactoryClient(artConfig);
+
+		this.artItem = this.artifactoryClient
+			.query<ArtifactoryItemMeta>(aql)
 			.then(response => {
 				if (response.results.length === 0) {
 					throw new Error(`Artifactory item [${aqlItemField}]:(${metaptr.oid.value}) not found`);
@@ -123,7 +132,7 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 				}
 				
 				const item = response.results[0];
-				this.uri = item ? jfrog.artifactory().resolveUri(item) : `item not found: ${metaptr.oid.value}`;
+				this.uri = item ? this.artifactoryClient.resolveUri(item) : `item not found: ${metaptr.oid.value}`;
 				return item;
 			});
 
@@ -148,11 +157,11 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 
 	async open(): Promise<stream.Readable> {
 		const item = await this.resolveArtItem();
-		const contentStream = await jfrog.artifactory().getContentStream(item);
+		const contentStream = await this.artifactoryClient.getContentStream(item);
 		return contentStream;
 	}
 
-	private async resolveArtItem(): Promise<jfrog.ArtifactoryItemMeta> {
+	private async resolveArtItem(): Promise<ArtifactoryItemMeta> {
 		const item = await this.artItem;
 		if (!item) {
 			throw new Error(`artifactory item:(${this.metaptr.oid.kind}:${this.metaptr.oid.value}) not found`);
