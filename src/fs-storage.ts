@@ -18,9 +18,6 @@ function computeFileMd5(fullPath: string): Promise<string> {
 		});
 }
 
-/**
- * 
- */
 class FsObjectBase {
 	readonly rootPath: string;
 	readonly relPath: string;
@@ -42,9 +39,6 @@ class FsObjectBase {
 	}
 }
 
-/**
- * 
- */
 class FsObject extends FsObjectBase implements StorageObject {
 
 	private readonly stats: fs.Stats;
@@ -92,9 +86,6 @@ class FsObject extends FsObjectBase implements StorageObject {
 	}
 }
 
-/**
- * 
- */
 class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 	private readonly metaptr: MetaPointer;
 	private readonly artItem: Promise<ArtifactoryItemMeta | null>;
@@ -170,9 +161,6 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 	}
 }
 
-/**
- * 
- */
 export class FsStorage implements ReadonlyStorage {
 
 	private readonly rootPath: string;

@@ -1,5 +1,5 @@
 import * as stream from 'stream';
-import * as http from './utils/http';
+import * as http from './utils/http.js';
 
 export interface ArtifactoryConfig {
 	protocol?: string;
@@ -9,7 +9,7 @@ export interface ArtifactoryConfig {
 	password?: string;
 }
 
-export type ItemType = 'file';
+type ItemType = 'file';
 
 export interface ArtifactoryItemMeta {
 	repo: string;
@@ -112,12 +112,3 @@ class Artifactory implements ArtifactoryClient {
 export function createArtifactoryClient(config: ArtifactoryConfig): ArtifactoryClient {
 	return new Artifactory(config);
 }
-
-// let artifactoryInstance: ArtifactoryClient | undefined;
-
-// export function artifactory(): ArtifactoryClient {
-// 	if (!artifactoryInstance) {
-// 		artifactoryInstance = new Artifactory();
-// 	}
-// 	return artifactoryInstance;
-// }

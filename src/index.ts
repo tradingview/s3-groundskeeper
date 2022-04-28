@@ -1,2 +1,2 @@
 export { MetaPointer, readMetaPointerFromFile } from './metapointer.js';
-export * from './artifactory-client.js';
+export { ArtifactoryConfig, ArtifactoryItemMeta, AqlRequestResult, ArtifactoryClient, createArtifactoryClient } from './artifactory-client.js';
