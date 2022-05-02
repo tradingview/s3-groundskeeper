@@ -4,8 +4,6 @@ const { exit } = require('process');
 const yargs = require('yargs');
 const { hideBin } = require('yargs/helpers');
 
-const PACKAGE_NAME = 's3-groundskeeper';
-
 function main() {
 	try {
 		copyLicense();
@@ -43,7 +41,7 @@ function copyLicense() {
 
 function generatePackage() {
 	const packageMetadata = (version, dependencies) => ({
-		name: PACKAGE_NAME,
+		name: 's3-groundskeeper',
 		version: version,
 		author: 'TradingView, Inc.',
 		description: 'One way sync. local directory -> s3 bucket\'s content',

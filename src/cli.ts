@@ -8,7 +8,6 @@ import { syncStorage } from './storage-sync.js';
 import * as diag from './diag.js';
 
 async function main(): Promise<number | undefined> {
-
 	const argv = getArgv();
 
 	const sourceStorage = new FsStorage(argv.src);

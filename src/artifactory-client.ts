@@ -1,7 +1,7 @@
 import * as stream from 'stream';
 import * as http from './utils/http.js';
 
-export interface ArtifactoryConfig {
+export interface ArtifactoryClientConfig {
 	protocol?: string;
 	host: string;
 	user?: string;
@@ -40,14 +40,14 @@ export interface ArtifactoryClient {
 
 class Artifactory implements ArtifactoryClient {
 
-	private readonly config: ArtifactoryConfig;
+	private readonly config: ArtifactoryClientConfig;
 
-	constructor(config: ArtifactoryConfig) {
-		this.config = config;
-
-		if (!this.config.host || this.config.host.length === 0) {
+	constructor(config: ArtifactoryClientConfig) {
+		if (!config.host) {
 			throw new Error('jfrog artifactory host can not be empty.');
 		}
+
+		this.config = config;
 	}
 
 	private get authorizationString(): string {
@@ -109,6 +109,6 @@ class Artifactory implements ArtifactoryClient {
 	}
 }
 
-export function createArtifactoryClient(config: ArtifactoryConfig): ArtifactoryClient {
+export function createArtifactoryClient(config: ArtifactoryClientConfig): ArtifactoryClient {
 	return new Artifactory(config);
 }
