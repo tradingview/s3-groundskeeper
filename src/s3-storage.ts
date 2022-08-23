@@ -28,9 +28,6 @@ function getS3Config(): S3Config {
 	return s3Config;
 }
 
-/**
- * 
- */
 class S3Object implements StorageObject {
 	private readonly client: S3.S3Client;
 	private readonly bucket: string;
@@ -67,9 +64,6 @@ class S3Object implements StorageObject {
 	}
 }
 
-/**
- * 
- */
 export class S3Storage implements Storage {
 
 	private readonly client: S3.S3Client;

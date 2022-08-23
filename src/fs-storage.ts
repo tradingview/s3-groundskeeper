@@ -3,73 +3,10 @@ import * as path from 'path';
 import * as stream from 'stream';
 import * as crypto from 'crypto';
 import { ReadonlyStorage, StorageObject, ObjectMeta } from './storage-api.js';
-import * as jfrog from './jfrog.js';
-import { findMetaForPath } from './config.js';
+import { findMetaForPath, getArgv } from './config.js';
 
-interface MetaPointer {
-	readonly source: string;
-	oid: {kind: string; value: string};
-}
+import { ArtifactoryClient, ArtifactoryConfig, ArtifactoryItemMeta, createArtifactoryClient, MetaPointer, readMetaPointerFromFile } from './index.js';
 
-async function readMetaPointer(filePath: string, stats: fs.Stats): Promise<MetaPointer | undefined> {
-	const tag = '#metapointer';
-
-	if (stats.size <= tag.length) {
-		return ;
-	}
-
-	const handle = await fs.promises.open(filePath, 'r')
-
-	try {
-		const readString = (len: number): Promise<string> => {
-			return handle.read(Buffer.alloc(len), 0, len, 0).then(result => {
-				return result.buffer.toString('utf8', 0, result.bytesRead);
-			});
-		};
-
-		const tagLine = await readString(tag.length);
-		if (tagLine !== tag) {
-			return;
-		}
-
-		const content = await readString(stats.size);
-		const lines = content
-			.split('\n')
-			.map(l => l.trim())
-			.filter(l => l.length > 0)
-			;
-
-		const source = (() => {
-			const line0 = lines.shift();
-			if (!line0) {
-				return;
-			}
-			const match = /#metapointer ([a-z0-9_]+)$/.exec(line0);
-			return (match && match.length > 1) ? match[1] : undefined;
-		})();
-
-		if (!source) {
-			throw new Error(`Invalid #metapointer, source must be specified: ${filePath}`);
-		}
-
-		const oidRe = /^oid ([A-Za-z0-9_]+):([A-Za-z0-9\._-]+)$/;
-
-		for (const line of lines) {
-			const match = oidRe.exec(line);
-			// tslint:disable-next-line: no-magic-numbers
-			if (match && match.length === 3) {
-				return {
-					source,
-					// tslint:disable-next-line: no-magic-numbers
-					oid: {kind: match[1], value: match[2]}
-				};
-			}
-		}
-	}
-	finally {
-		await handle.close();
-	}
-}
 
 function computeFileMd5(fullPath: string): Promise<string> {
 	return fs.promises
@@ -81,9 +18,6 @@ function computeFileMd5(fullPath: string): Promise<string> {
 		});
 }
 
-/**
- * 
- */
 class FsObjectBase {
 	readonly rootPath: string;
 	readonly relPath: string;
@@ -105,9 +39,6 @@ class FsObjectBase {
 	}
 }
 
-/**
- * 
- */
 class FsObject extends FsObjectBase implements StorageObject {
 
 	private readonly stats: fs.Stats;
@@ -155,12 +86,10 @@ class FsObject extends FsObjectBase implements StorageObject {
 	}
 }
 
-/**
- * 
- */
 class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 	private readonly metaptr: MetaPointer;
-	private readonly artItem: Promise<jfrog.ArtifactoryItemMeta | null>;
+	private readonly artItem: Promise<ArtifactoryItemMeta | null>;
+	private readonly artifactoryClient: ArtifactoryClient;
 	private uri: string | undefined;
 
 	constructor(rootPath: string, relPath: string, metaptr: MetaPointer) {
@@ -174,8 +103,17 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 				.include("*")
 				`;
 
-		this.artItem = jfrog.artifactory()
-			.query<jfrog.ArtifactoryItemMeta>(aql)
+		const argv = getArgv();
+		const artConfig: ArtifactoryConfig = {
+			host: argv['artifactory-host'],
+			user: argv['artifactory-user'],
+			apiKey: argv['artifactory-apikey']
+		};		
+
+		this.artifactoryClient = createArtifactoryClient(artConfig);
+
+		this.artItem = this.artifactoryClient
+			.query<ArtifactoryItemMeta>(aql)
 			.then(response => {
 				if (response.results.length === 0) {
 					throw new Error(`Artifactory item [${aqlItemField}]:(${metaptr.oid.value}) not found`);
@@ -185,7 +123,7 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 				}
 				
 				const item = response.results[0];
-				this.uri = item ? jfrog.artifactory().resolveContentUri(item) : `item not found: ${metaptr.oid.value}`;
+				this.uri = item ? this.artifactoryClient.resolveUri(item) : `item not found: ${metaptr.oid.value}`;
 				return item;
 			});
 
@@ -210,11 +148,11 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 
 	async open(): Promise<stream.Readable> {
 		const item = await this.resolveArtItem();
-		const contentStream = await jfrog.artifactory().getContentStream(item);
+		const contentStream = await this.artifactoryClient.getContentStream(item);
 		return contentStream;
 	}
 
-	private async resolveArtItem(): Promise<jfrog.ArtifactoryItemMeta> {
+	private async resolveArtItem(): Promise<ArtifactoryItemMeta> {
 		const item = await this.artItem;
 		if (!item) {
 			throw new Error(`artifactory item:(${this.metaptr.oid.kind}:${this.metaptr.oid.value}) not found`);
@@ -223,9 +161,6 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 	}
 }
 
-/**
- * 
- */
 export class FsStorage implements ReadonlyStorage {
 
 	private readonly rootPath: string;
@@ -258,7 +193,7 @@ export class FsStorage implements ReadonlyStorage {
 					subworks.push(iterateDirectory(fullPath));
 				}
 				else if (stats.isSymbolicLink() || stats.isFile()) {
-					const metaptr = stats.isSymbolicLink() ? undefined : await readMetaPointer(fullPath, stats);
+					const metaptr = stats.isSymbolicLink() ? undefined : await readMetaPointerFromFile(fullPath, stats);
 					const obj = metaptr ? new MetaPointerFsObject(this.rootPath, key, metaptr) : new FsObject(this.rootPath, key, stats);
 					objects.push(obj);
 				}

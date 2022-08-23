@@ -51,8 +51,9 @@ function generatePackage() {
 			type: 'git',
 			url: 'https://github.com/tradingview/s3-groundskeeper'
 		},
+		main: 'index.js',
 		bin: {
-			s3gk: 'index.js'
+			s3gk: 'cli.js'
 		},
 		type: 'module',
 		dependencies: dependencies

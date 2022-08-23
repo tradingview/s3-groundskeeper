@@ -14,6 +14,7 @@
 			"es5"
 		],
 		"module": "ES6",
+		"declaration": true,
 		"moduleResolution": "Node",
 		"noImplicitAny": true,
 		"sourceMap": true,

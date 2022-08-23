@@ -36,6 +36,6 @@
 			"console": "integratedTerminal",
 			"env": {},
 			"cwd": "${workspaceRoot}/"
-		},
+		}
 	]
 }
