@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.0.0",
-    "file-loader": "^6.2.0",
     "minimatch": "3.0.4",
     "yargs": "^16.2.0"
   }
