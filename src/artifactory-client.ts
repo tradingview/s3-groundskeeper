@@ -95,7 +95,12 @@ class Artifactory implements ArtifactoryClient {
 
 	getContentStream(item: ArtifactoryItemMeta | string): Promise<stream.Readable> {
 		const uri = this.resolveUri(item);
-		return http.get(uri, {stream: true});
+		return http.get(uri,
+		{
+			headers: {
+				Authorization: this.authorizationString
+			}
+		});
 	}
 
 	resolveUri(item: ArtifactoryItemMeta | string): string {

@@ -79,13 +79,10 @@ export async function request(url: string, method: string, requestData?: Request
 	return buffer ? buffer : Buffer.from('');
 }
 
-export function get(url: string, opt?: {stream: false} ): Promise<Buffer>;
-export function get(url: string, opt?: {stream: true} ): Promise<stream.Readable>;
-
-export async function get(url: string, opt: {stream: boolean} = {stream: false}): Promise<Buffer | stream.Readable> {
-	return opt.stream ? requestStream(url, 'GET', undefined ) : request(url, 'GET', undefined );
+export function get(url: string, requestData?: RequestData): Promise<stream.Readable> {
+	return requestStream(url, 'GET', requestData);
 }
 
 export function post(url: string, requestData?: RequestData): Promise<Buffer> {
-	return request(url, 'POST', requestData );
+	return request(url, 'POST', requestData);
 }
