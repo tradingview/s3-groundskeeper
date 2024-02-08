@@ -1,5 +1,5 @@
 import * as http from './utils/http.js';
-import { IncomingMessage } from 'http';
+import type { IncomingMessage } from 'http';
 
 export interface ArtifactoryClientConfig {
 	protocol?: string;
@@ -34,8 +34,13 @@ export interface AqlRequestResult<T> {
 
 export interface ArtifactoryClient {
 	query<T>(request: string): Promise<AqlRequestResult<T>>;
-	getContentStream(item: ArtifactoryItemMeta | string, rangeHeader?: string): Promise<IncomingMessage>;
+	getContentStream(item: ArtifactoryItemMeta | string, byteRange?: ByteRange): Promise<IncomingMessage>;
 	resolveUri(item: ArtifactoryItemMeta | string): string;
+}
+
+export type ByteRange = {
+    start: number;
+    end: number;
 }
 
 class Artifactory implements ArtifactoryClient {
@@ -93,7 +98,7 @@ class Artifactory implements ArtifactoryClient {
 		});
 	}
 
-	getContentStream(item: ArtifactoryItemMeta | string, rangeHeader?: string): Promise<IncomingMessage> {
+	getContentStream(item: ArtifactoryItemMeta | string, byteRange?: ByteRange): Promise<IncomingMessage> {
 		const uri = this.resolveUri(item);
 
 		const reqData: http.RequestData = {
@@ -102,8 +107,8 @@ class Artifactory implements ArtifactoryClient {
 			}
 		};
 
-		if (rangeHeader && reqData.headers) {
-			reqData.headers.Range = rangeHeader;
+		if (byteRange && reqData.headers) {
+			reqData.headers.Range = `bytes=${byteRange.start}-${byteRange.end}`;
 		}
 
 		return http.get(uri, reqData);
