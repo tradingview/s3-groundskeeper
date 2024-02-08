@@ -1,5 +1,5 @@
-import * as stream from 'stream';
 import * as http from './utils/http.js';
+import { IncomingMessage } from 'http';
 
 export interface ArtifactoryClientConfig {
 	protocol?: string;
@@ -34,7 +34,7 @@ export interface AqlRequestResult<T> {
 
 export interface ArtifactoryClient {
 	query<T>(request: string): Promise<AqlRequestResult<T>>;
-	getContentStream(item: ArtifactoryItemMeta | string): Promise<stream.Readable>;
+	getContentStream(item: ArtifactoryItemMeta | string, rangeHeader?: string): Promise<IncomingMessage>;
 	resolveUri(item: ArtifactoryItemMeta | string): string;
 }
 
@@ -93,20 +93,30 @@ class Artifactory implements ArtifactoryClient {
 		});
 	}
 
-	getContentStream(item: ArtifactoryItemMeta | string): Promise<stream.Readable> {
+	getContentStream(item: ArtifactoryItemMeta | string, rangeHeader?: string): Promise<IncomingMessage> {
 		const uri = this.resolveUri(item);
-		return http.get(uri,
-		{
+
+		const reqData: http.RequestData = {
 			headers: {
 				Authorization: this.authorizationString
 			}
-		});
+		};
+
+		if (rangeHeader && reqData.headers) {
+			reqData.headers.Range = rangeHeader;
+		}
+
+		return http.get(uri, reqData);
 	}
 
 	resolveUri(item: ArtifactoryItemMeta | string): string {
 		const baseUrl = `${this.config.protocol ?? 'https'}://${this.config.host}/artifactory/`;
 
 		if (typeof item === 'string') {
+			if (item.indexOf(baseUrl) === 0) {
+				return item;
+			}
+
 			return `${baseUrl}${item}`;
 		}
 
