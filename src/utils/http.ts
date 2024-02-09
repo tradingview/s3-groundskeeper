@@ -1,4 +1,3 @@
-import * as stream from 'stream';
 import { IncomingMessage } from 'http';
 import * as https from 'https';
 
@@ -20,6 +19,11 @@ export async function requestStream(url: string, method: string, requestData?: R
 		
 			req
 				.on('response', (incomingMessage: IncomingMessage) => {
+					if (incomingMessage.statusCode === 206) {
+						resolve(incomingMessage);
+						return;
+					}
+
 					if (incomingMessage.statusCode !== 200) {
 						const stCode = incomingMessage.statusCode ?? 'NO_CODE';
 						const stMessage = incomingMessage.statusMessage ?? 'NO_MESSAGE';
@@ -79,7 +83,7 @@ export async function request(url: string, method: string, requestData?: Request
 	return buffer ? buffer : Buffer.from('');
 }
 
-export function get(url: string, requestData?: RequestData): Promise<stream.Readable> {
+export function get(url: string, requestData?: RequestData): Promise<IncomingMessage> {
 	return requestStream(url, 'GET', requestData);
 }
 
