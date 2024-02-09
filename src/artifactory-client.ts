@@ -32,20 +32,20 @@ export interface AqlRequestResult<T> {
 	};
 }
 
+export interface ByteRange {
+	start: number;
+	end: number;
+}
+
 export interface ArtifactoryClient {
 	query<T>(request: string): Promise<AqlRequestResult<T>>;
 	getContentStream(item: ArtifactoryItemMeta | string, byteRange?: ByteRange): Promise<IncomingMessage>;
 	resolveUri(item: ArtifactoryItemMeta | string): string;
 }
 
-export type ByteRange = {
-    start: number;
-    end: number;
-}
-
 class Artifactory implements ArtifactoryClient {
-
 	private readonly config: ArtifactoryClientConfig;
+	private readonly baseUrl;
 
 	constructor(config: ArtifactoryClientConfig) {
 		if (!config.host) {
@@ -53,6 +53,7 @@ class Artifactory implements ArtifactoryClient {
 		}
 
 		this.config = config;
+		this.baseUrl = `${this.config.protocol ?? 'https'}://${this.config.host}/artifactory/`;
 	}
 
 	private get authorizationString(): string {
@@ -115,17 +116,15 @@ class Artifactory implements ArtifactoryClient {
 	}
 
 	resolveUri(item: ArtifactoryItemMeta | string): string {
-		const baseUrl = `${this.config.protocol ?? 'https'}://${this.config.host}/artifactory/`;
-
-		if (typeof item === 'string') {
-			if (item.indexOf(baseUrl) === 0) {
-				return item;
-			}
-
-			return `${baseUrl}${item}`;
+		if (typeof item !== 'string') {
+			return `${this.baseUrl}${item.repo}/${item.path}/${item.name}`;
 		}
-
-		return `${baseUrl}${item.repo}/${item.path}/${item.name}`;
+	
+		if (item.indexOf(this.baseUrl) === 0) {
+			return item;
+		}
+		
+		return `${this.baseUrl}${item}`;
 	}
 }
 

@@ -1,4 +1,3 @@
-import * as stream from 'stream';
 import { IncomingMessage } from 'http';
 import * as https from 'https';
 
