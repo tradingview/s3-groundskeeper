@@ -107,8 +107,9 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 		const artConfig: ArtifactoryConfig = {
 			host: argv['artifactory-host'],
 			user: argv['artifactory-user'],
+			password: argv['artifactory-password'],
 			apiKey: argv['artifactory-apikey']
-		};		
+		};
 
 		this.artifactoryClient = createArtifactoryClient(artConfig);
 

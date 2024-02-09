@@ -8,6 +8,7 @@ interface S3Config {
 	accessKey: string;
 	secretAccessKey: string;
 	region: string;
+	endpoint: string | undefined;
 	bucket: string;
 }
 
@@ -21,6 +22,7 @@ function getS3Config(): S3Config {
 			accessKey: argv['s3-key'],
 			secretAccessKey: argv['s3-seckey'],
 			region: argv['s3-region'],
+			endpoint: argv['s3-endpoint'],
 			bucket: argv['s3-bucket']
 		};
 	}
@@ -75,7 +77,9 @@ export class S3Storage implements Storage {
 			credentials: {
 				accessKeyId: conf.accessKey,
 				secretAccessKey: conf.secretAccessKey
-			}
+			},
+			endpoint: conf.endpoint,
+			forcePathStyle: conf.endpoint !== undefined,
 		};
 
 		this.client = new S3.S3Client(clientConfig);

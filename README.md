@@ -20,18 +20,20 @@ start develop: `yarn build`
 |-------------------------------|----------|----------|--------------------------|
 |--src=path                     | -s=path  |*         | path to source (sync out) directory |
 |--s3-region=name               |          |*         | S3 Bucket's region       |
+|--s3-endpoint=url              |          |          | S3 Endpoint URL          |
 |--s3-key=key                   |          |*         | S3 Access Key            |
 |--s3-seckey=key                |          |*         | S3 Secret Access Key            |
 |--s3-bucket=name               | -b=name  |*         | S3 destination (sync in) bucket name (**NOT ARN**, just a name)   |
-|--artifactory-host=host        |          |*         | jfrog Artifatory host |
-|--artifactory-user=username    |          |*         | jfrog Artifatory user |
-|--artifactory-apikey=jfapikey  |          |*         | jfrog Artifatory user's Api key |
+|--artifactory-host=host        |          |*         | jfrog Artifactory host |
+|--artifactory-user=username    |          |*         | jfrog Artifactory user |
+|--artifactory-password=password|          |          | jfrog Artifactory user's password |
+|--artifactory-apikey=jfapikey  |          |          | jfrog Artifactory user's Api key |
 |--dry-run                      | -n       |          | Dry run: do nothing only prints what to do. |
 |--show-conf                    |          |          | Print json object for the used configuration. |
 
 ### jFrog notes
 
-Currently supported [Basic authentication using your username and API Key](https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-Authentication): user name and Api key must be provided. Each request will use **Authorization** (http header) = base64('Basic jfuser:jfapikey'). Instead of api key password password also can be used.
+Currently supported [Basic authentication using your username and API Key](https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-Authentication): user name and Api key must be provided. Each request will use **Authorization** (http header) = base64('Basic jfuser:jfapikey'). Instead of api key password also can be used.
 
 ### S3 notes
 

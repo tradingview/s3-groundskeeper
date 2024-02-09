@@ -7,12 +7,14 @@ import minimatch from 'minimatch';
 export interface ProcessArgv {
 	src: string;
 	['s3-region']: string;
+	['s3-endpoint']: string | undefined;
 	['s3-key']: string;
 	['s3-seckey']: string;
 	['s3-bucket']: string;
 	['artifactory-host']: string;
 	['artifactory-user']: string;
-	['artifactory-apikey']: string;
+	['artifactory-password']: string | undefined;
+	['artifactory-apikey']: string | undefined;
 	meta: string;
 	['dry-run']: boolean;
 }
@@ -23,12 +25,14 @@ export function setupArgv(): void {
 	const argv = (yargs(process.argv) as unknown as Argv)
 		.option('src', {  alias: 's', demand: true, description: 'source directory to sync'})
 		.option('s3-region', { demand: true,  description: 'S3 Region'})
+		.option('s3-endpoint', { demand: false,  description: 'S3 Endpoint'})
 		.option('s3-key', { demand: true,  description: 'S3 Access Key'})
 		.option('s3-seckey', { demand: true,  description: 'S3 Secret Access Key'})
 		.option('s3-bucket', { alias: 'b', demand: true, description: 'S3 destination bucket name'})
 		.option('artifactory-host', { demand: true, description: 'jfrog Artifatory host'})
 		.option('artifactory-user', { demand: true, description: 'jfrog Artifatory user'})
-		.option('artifactory-apikey', { demand: true, description: 'jfrog Artifatory user\'s Api key' })
+		.option('artifactory-password', { demand: false, description: 'jfrog Artifatory user\'s password'})
+		.option('artifactory-apikey', { demand: false, description: 'jfrog Artifatory user\'s Api key' })
 		.option('meta', {demand: false, default: '', description: 'Content meta information.' } )
 		.option('dry-run', { alias: 'n', demand: false, default: false, ['boolean']: true, description: 'Dry run: do nothing only prints what to do.'})
 		.option('show-conf', { demand: false, default: false, ['boolean']: true, description: 'Print json object for the used configuration'})
