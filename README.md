@@ -67,7 +67,8 @@ or
 
 ## Publish a new release
 1. Make an annotated git tag using `git tag -a <version>` or `git tag -s <version>`, if signed tag is preferred.
-2. Checkout the tag, cleanup the working tree.
-3. Build the package: `npm run build -- --version <version>`.
-4. Test the publish: `npm publish dist --dry-run`, check the package contents.
-5. Perform the actual publishing: `npm publish dist`.
+1. Checkout the tag, cleanup the working tree.
+1. Install the dependencies: `npm ci`.
+1. Build the package: `npm run build -- --version <version>`.
+1. Create the tarball: `npm pack ./dist`, check the tarball contents.
+1. Publish the tarball: `npm publish <path-to-tgz>`.
