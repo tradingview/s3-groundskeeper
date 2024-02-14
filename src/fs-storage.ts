@@ -90,7 +90,7 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 	private readonly metaptr: MetaPointer;
 	private readonly artItem: Promise<ArtifactoryItemMeta | null>;
 	private readonly artifactoryClient: ArtifactoryClient;
-	private uri: URL | undefined;
+	private url: URL | undefined;
 
 	constructor(rootPath: string, relPath: string, metaptr: MetaPointer) {
 		super(rootPath, relPath);
@@ -130,14 +130,14 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 				if (!item) {
 					throw new Error(`item not found: ${metaptr.oid.value}`);
 				}
-				this.uri = this.artifactoryClient.resolveUri(item);
+				this.url = this.artifactoryClient.getItemUrl(item);
 				return item;
 			});
 
 	}
 
 	get description(): string {
-		const name =  this.uri ? this.uri.toString() : `resolve artifactory item (${this.metaptr.oid.value})`;
+		const name =  this.url ? this.url.toString() : `resolve artifactory item (${this.metaptr.oid.value})`;
 		return `${name}, (${this.contentType})`;
 	}
 

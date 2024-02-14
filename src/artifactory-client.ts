@@ -38,8 +38,9 @@ export interface ByteRange {
 
 export interface ArtifactoryClient {
 	query<T>(request: string): Promise<AqlRequestResult<T>>;
-	getContentStream(item: ArtifactoryItemMeta | string, byteRange?: ByteRange): Promise<IncomingMessage>;
-	resolveUri(item: ArtifactoryItemMeta | string): URL;
+	getContentStream(item: ArtifactoryItemMeta, byteRange?: ByteRange): Promise<IncomingMessage>;
+	getItemUrl(item: ArtifactoryItemMeta): URL;
+	resolveUrl(relativeUrl: string): URL;
 }
 
 class Artifactory implements ArtifactoryClient {
@@ -71,9 +72,8 @@ class Artifactory implements ArtifactoryClient {
 	}
 
 
-	async query<T>(request: string): Promise<AqlRequestResult<T>> {
-
-		const url = this.resolveUri('api/search/aql');
+	public async query<T>(request: string): Promise<AqlRequestResult<T>> {
+		const url = this.resolveUrl('api/search/aql');
 
 		return http.post(url,
 		{
@@ -92,8 +92,8 @@ class Artifactory implements ArtifactoryClient {
 		});
 	}
 
-	getContentStream(item: ArtifactoryItemMeta | string, byteRange?: ByteRange): Promise<IncomingMessage> {
-		const uri = this.resolveUri(item);
+	public getContentStream(item: ArtifactoryItemMeta, byteRange?: ByteRange): Promise<IncomingMessage> {
+		const url = this.getItemUrl(item);
 
 		const reqData: http.RequestData = {
 			headers: {
@@ -105,19 +105,15 @@ class Artifactory implements ArtifactoryClient {
 			reqData.headers.Range = `bytes=${byteRange.start}-${byteRange.end}`;
 		}
 
-		return http.get(uri, reqData);
+		return http.get(url, reqData);
 	}
 
-	resolveUri(item: ArtifactoryItemMeta | string): URL {
-		if (typeof item !== 'string') {
-			return new URL(`${item.repo}/${item.path}/${item.name}`, this.config.baseUrl);
-		}
-	
-		if (item.indexOf(this.config.baseUrl.toString()) === 0) {
-			return new URL(item);
-		}
-		
-		return new URL(item, this.config.baseUrl);
+	public getItemUrl(item: ArtifactoryItemMeta): URL {
+		return this.resolveUrl(`${item.repo}/${item.path}/${item.name}`);
+	}
+
+	public resolveUrl(relativeUrl: string): URL {
+		return new URL(relativeUrl, this.config.baseUrl);
 	}
 }
 
