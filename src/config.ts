@@ -11,7 +11,7 @@ export interface ProcessArgv {
 	['s3-key']: string;
 	['s3-seckey']: string;
 	['s3-bucket']: string;
-	['artifactory-host']: string;
+	['artifactory-url']: string;
 	['artifactory-user']: string;
 	['artifactory-password']: string | undefined;
 	['artifactory-apikey']: string | undefined;
@@ -29,7 +29,7 @@ export function setupArgv(): void {
 		.option('s3-key', { demand: true,  description: 'S3 Access Key'})
 		.option('s3-seckey', { demand: true,  description: 'S3 Secret Access Key'})
 		.option('s3-bucket', { alias: 'b', demand: true, description: 'S3 destination bucket name'})
-		.option('artifactory-host', { demand: true, description: 'jfrog Artifatory host'})
+		.option('artifactory-url', { demand: true, description: 'jfrog Artifatory base URL'})
 		.option('artifactory-user', { demand: true, description: 'jfrog Artifatory user'})
 		.option('artifactory-password', { demand: false, description: 'jfrog Artifatory user\'s password'})
 		.option('artifactory-apikey', { demand: false, description: 'jfrog Artifatory user\'s Api key' })

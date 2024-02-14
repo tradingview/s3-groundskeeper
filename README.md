@@ -24,7 +24,7 @@ start develop: `yarn build`
 |--s3-key=key                   |          |*         | S3 Access Key            |
 |--s3-seckey=key                |          |*         | S3 Secret Access Key            |
 |--s3-bucket=name               | -b=name  |*         | S3 destination (sync in) bucket name (**NOT ARN**, just a name)   |
-|--artifactory-host=host        |          |*         | jfrog Artifactory host |
+|--artifactory-url=url          |          |*         | jfrog Artifactory base url |
 |--artifactory-user=username    |          |*         | jfrog Artifactory user |
 |--artifactory-password=password|          |          | jfrog Artifactory user's password |
 |--artifactory-apikey=jfapikey  |          |          | jfrog Artifactory user's Api key |
