@@ -9,10 +9,9 @@ export interface RequestBody {
 export interface RequestData {
 	headers?: Record<string, string>;
 	body?: RequestBody;
-	redirectHandler?: (url: string) => string | undefined;
 }
 
-export async function requestStream(url: string, method: string, requestData?: RequestData): Promise<IncomingMessage> {
+export async function requestStream(url: URL, method: string, requestData?: RequestData): Promise<IncomingMessage> {
 	return new Promise((resolve, reject) => {
 		try {
 			const req = https.request(url, { method });
@@ -27,7 +26,7 @@ export async function requestStream(url: string, method: string, requestData?: R
 					if (incomingMessage.statusCode !== 200) {
 						const stCode = incomingMessage.statusCode ?? 'NO_CODE';
 						const stMessage = incomingMessage.statusMessage ?? 'NO_MESSAGE';
-						const message = `[${method} ${url}]:${stCode}/${stMessage}`;
+						const message = `[${method} ${url.toString()}]:${stCode}/${stMessage}`;
 						reject(new Error(message));
 						return;
 					}
@@ -37,7 +36,7 @@ export async function requestStream(url: string, method: string, requestData?: R
 				.on('error', (err: Error) => {
 					const errno = (err as {errno?: string}).errno ?? '';
 					if (errno === 'ETIMEDOUT') {
-						reject(new Error(`Request (${url}) timeout.`));
+						reject(new Error(`Request (${url.toString()}) timeout.`));
 					}
 					else {
 						reject(err);
@@ -69,7 +68,7 @@ export async function requestStream(url: string, method: string, requestData?: R
 }
 
 
-export async function request(url: string, method: string, requestData?: RequestData): Promise<Buffer> {
+export async function request(url: URL, method: string, requestData?: RequestData): Promise<Buffer> {
 
 	const responseStream = await requestStream(url, method, requestData);
 
@@ -83,10 +82,10 @@ export async function request(url: string, method: string, requestData?: Request
 	return buffer ? buffer : Buffer.from('');
 }
 
-export function get(url: string, requestData?: RequestData): Promise<IncomingMessage> {
+export function get(url: URL, requestData?: RequestData): Promise<IncomingMessage> {
 	return requestStream(url, 'GET', requestData);
 }
 
-export function post(url: string, requestData?: RequestData): Promise<Buffer> {
+export function post(url: URL, requestData?: RequestData): Promise<Buffer> {
 	return request(url, 'POST', requestData);
 }

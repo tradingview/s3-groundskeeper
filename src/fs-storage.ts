@@ -90,7 +90,7 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 	private readonly metaptr: MetaPointer;
 	private readonly artItem: Promise<ArtifactoryItemMeta | null>;
 	private readonly artifactoryClient: ArtifactoryClient;
-	private uri: string | undefined;
+	private url: URL | undefined;
 
 	constructor(rootPath: string, relPath: string, metaptr: MetaPointer) {
 		super(rootPath, relPath);
@@ -104,11 +104,15 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 				`;
 
 		const argv = getArgv();
+		if (argv['artifactory-url'].length === 0) {
+			throw new Error('artifactory-url can not be empty.');
+		}
 		const artConfig: ArtifactoryConfig = {
-			host: argv['artifactory-host'],
+			baseUrl: new URL(argv['artifactory-url']),
 			user: argv['artifactory-user'],
+			password: argv['artifactory-password'],
 			apiKey: argv['artifactory-apikey']
-		};		
+		};
 
 		this.artifactoryClient = createArtifactoryClient(artConfig);
 
@@ -123,14 +127,17 @@ class MetaPointerFsObject extends FsObjectBase implements StorageObject {
 				}
 				
 				const item = response.results[0];
-				this.uri = item ? this.artifactoryClient.resolveUri(item) : `item not found: ${metaptr.oid.value}`;
+				if (!item) {
+					throw new Error(`item not found: ${metaptr.oid.value}`);
+				}
+				this.url = this.artifactoryClient.getItemUrl(item);
 				return item;
 			});
 
 	}
 
 	get description(): string {
-		const name =  this.uri ? this.uri : `resolve artifactory item (${this.metaptr.oid.value})`;
+		const name =  this.url ? this.url.toString() : `resolve artifactory item (${this.metaptr.oid.value})`;
 		return `${name}, (${this.contentType})`;
 	}
 

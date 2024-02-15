@@ -2,8 +2,7 @@ import * as http from './utils/http.js';
 import type { IncomingMessage } from 'http';
 
 export interface ArtifactoryClientConfig {
-	protocol?: string;
-	host: string;
+	baseUrl: URL;
 	user?: string;
 	apiKey?: string;
 	password?: string;
@@ -39,21 +38,16 @@ export interface ByteRange {
 
 export interface ArtifactoryClient {
 	query<T>(request: string): Promise<AqlRequestResult<T>>;
-	getContentStream(item: ArtifactoryItemMeta | string, byteRange?: ByteRange): Promise<IncomingMessage>;
-	resolveUri(item: ArtifactoryItemMeta | string): string;
+	getContentStream(item: ArtifactoryItemMeta, byteRange?: ByteRange): Promise<IncomingMessage>;
+	getItemUrl(item: ArtifactoryItemMeta): URL;
+	resolveUrl(relativeUrl: string): URL;
 }
 
 class Artifactory implements ArtifactoryClient {
 	private readonly config: ArtifactoryClientConfig;
-	private readonly baseUrl;
 
 	constructor(config: ArtifactoryClientConfig) {
-		if (!config.host) {
-			throw new Error('jfrog artifactory host can not be empty.');
-		}
-
 		this.config = config;
-		this.baseUrl = `${this.config.protocol ?? 'https'}://${this.config.host}/artifactory/`;
 	}
 
 	private get authorizationString(): string {
@@ -78,9 +72,8 @@ class Artifactory implements ArtifactoryClient {
 	}
 
 
-	async query<T>(request: string): Promise<AqlRequestResult<T>> {
-
-		const url = this.resolveUri('api/search/aql');
+	public async query<T>(request: string): Promise<AqlRequestResult<T>> {
+		const url = this.resolveUrl('api/search/aql');
 
 		return http.post(url,
 		{
@@ -99,8 +92,8 @@ class Artifactory implements ArtifactoryClient {
 		});
 	}
 
-	getContentStream(item: ArtifactoryItemMeta | string, byteRange?: ByteRange): Promise<IncomingMessage> {
-		const uri = this.resolveUri(item);
+	public getContentStream(item: ArtifactoryItemMeta, byteRange?: ByteRange): Promise<IncomingMessage> {
+		const url = this.getItemUrl(item);
 
 		const reqData: http.RequestData = {
 			headers: {
@@ -112,19 +105,15 @@ class Artifactory implements ArtifactoryClient {
 			reqData.headers.Range = `bytes=${byteRange.start}-${byteRange.end}`;
 		}
 
-		return http.get(uri, reqData);
+		return http.get(url, reqData);
 	}
 
-	resolveUri(item: ArtifactoryItemMeta | string): string {
-		if (typeof item !== 'string') {
-			return `${this.baseUrl}${item.repo}/${item.path}/${item.name}`;
-		}
-	
-		if (item.indexOf(this.baseUrl) === 0) {
-			return item;
-		}
-		
-		return `${this.baseUrl}${item}`;
+	public getItemUrl(item: ArtifactoryItemMeta): URL {
+		return this.resolveUrl(`${item.repo}/${item.path}/${item.name}`);
+	}
+
+	public resolveUrl(relativeUrl: string): URL {
+		return new URL(relativeUrl, this.config.baseUrl);
 	}
 }
 

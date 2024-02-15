@@ -13,11 +13,12 @@
 				"--src=",
 				"--s3-bucket=",
 				"--s3-region=",
+				"--s3-endpoint=",
 				"--s3-key=",
 				"--s3-seckey=",
 				"--artifactory-host=",
 				"--artifactory-user=",
-				"--artifactory-apikey=",
+				"--artifactory-password=",
 				"--dry-run",
 				"--show-conf"
 			],
